@@ -61,5 +61,15 @@ dependencies {
     // Jetpack Compose integration
     implementation(libs.androidx.navigation.compose)
 
+    //GSON
     implementation(libs.gson)
+
+
+
+    // LiveData
+    implementation(libs.androidx.runtime.livedata)
+
+
+
+
 }

@@ -25,6 +25,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.NavType
@@ -46,6 +48,8 @@ import com.robusttech.kisileruygulamasi.entitity.Kisiler
 import com.robusttech.kisileruygulamasi.ui.theme.KisilerUygulamasiTheme
 import com.robusttech.kisileruygulamasi.ui.theme.Purple80
 import com.robusttech.kisileruygulamasi.ui.theme.PurpleGrey80
+import com.robusttech.kisileruygulamasi.viewmodel.AnasayfaViewModel
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,14 +96,9 @@ fun SayfaGecisleri() {
 fun Anasayfa(navController: NavController) {
     val aramaYapiliyorMu = remember { mutableStateOf(false) }
     val tf = remember { mutableStateOf("") }
-    val kisilerListesi = remember { mutableStateListOf<Kisiler>() }
 
-    LaunchedEffect(key1 = true) {
-        val k1 = Kisiler(1, "Ahmet", "11111")
-        val k2 = Kisiler(2, "Zeynep", "22222")
-        kisilerListesi.add(k1)
-        kisilerListesi.add(k2)
-    }
+    val viewModel: AnasayfaViewModel = viewModel()
+    val kisilerListesi = viewModel.kisilerListesi.observeAsState(listOf())
 
     Scaffold(
         topBar = {
@@ -110,7 +109,7 @@ fun Anasayfa(navController: NavController) {
                             value = tf.value,
                             onValueChange = {
                                 tf.value = it
-                                Log.e("TAG", "Kişi arama: $it")
+                                viewModel.ara(it)
                             },
                             label = { Text("Ara") },
                             colors = TextFieldDefaults.colors(
@@ -155,9 +154,9 @@ fun Anasayfa(navController: NavController) {
         content = {
             LazyColumn(modifier = Modifier.padding(it)) {
                 items(
-                    count = kisilerListesi.count(),
+                    count = kisilerListesi.value!!.count(),
                     itemContent = {
-                        val kisi = kisilerListesi[it]
+                        val kisi = kisilerListesi.value!![it]
                         Card(
                             modifier = Modifier
                                 .padding(5.dp)
@@ -176,7 +175,7 @@ fun Anasayfa(navController: NavController) {
                             ) {
                                 Text("${kisi.kisi_ad} - ${kisi.kisi_tel}")
                                 IconButton(onClick = {
-                                    Log.e("TAG", "kişi sil: ${kisi.kisi_id}", )
+                                    viewModel.sil(kisi.kisi_id)
                                 }) {
                                     Icon(painter = painterResource(R.drawable.sil_resim), tint = Color.Red, contentDescription = "")
                                 }

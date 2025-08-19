@@ -21,8 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.robusttech.kisileruygulamasi.entitity.Kisiler
 import com.robusttech.kisileruygulamasi.ui.theme.Purple80
+import com.robusttech.kisileruygulamasi.viewmodel.KisiDetaySayfaViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -31,6 +34,8 @@ fun KisiDetaySayfa(gelenKisi: Kisiler) {
     val tfKisiAd = remember { mutableStateOf("") }
     val tfKisiTel = remember { mutableStateOf("") }
     val localFocusManager = LocalFocusManager.current
+
+    val viewModel: KisiDetaySayfaViewModel = viewModel()
 
     LaunchedEffect(key1 = true) {
         tfKisiAd.value = gelenKisi.kisi_ad
@@ -66,7 +71,7 @@ fun KisiDetaySayfa(gelenKisi: Kisiler) {
                     onClick = {
                         val kisi_ad = tfKisiAd.value
                         val kisi_tel = tfKisiTel.value
-                        Log.e("TAG", "Kisi Detay Güncelle: ${gelenKisi.kisi_id} - $kisi_ad - $kisi_tel", )
+                        viewModel.guncelle(gelenKisi.kisi_id, kisi_ad, kisi_tel)
                         localFocusManager.clearFocus()
                     },
                     modifier = Modifier.size(250.dp,50.dp)

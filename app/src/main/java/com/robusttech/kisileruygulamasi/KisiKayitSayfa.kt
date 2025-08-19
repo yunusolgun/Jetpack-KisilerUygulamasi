@@ -23,8 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.robusttech.kisileruygulamasi.ui.theme.Purple80
 import com.robusttech.kisileruygulamasi.ui.theme.PurpleGrey80
+import com.robusttech.kisileruygulamasi.viewmodel.KisiKayitSayfaViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +36,8 @@ fun KisiKayitSayfa() {
     val tfKisiAd = remember { mutableStateOf("") }
     val tfKisiTel = remember { mutableStateOf("") }
     val localFocusManager = LocalFocusManager.current
+
+    val viewModel: KisiKayitSayfaViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -64,7 +68,7 @@ fun KisiKayitSayfa() {
                     onClick = {
                         val kisi_ad = tfKisiAd.value
                         val kisi_tel = tfKisiTel.value
-                        Log.e("TAG", "KisiKayitSayfa: $kisi_ad - $kisi_tel", )
+                        viewModel.kayit(kisi_ad,kisi_tel)
                         localFocusManager.clearFocus()
                     },
                     modifier = Modifier.size(250.dp,50.dp)
