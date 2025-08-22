@@ -1,13 +1,21 @@
 package com.robusttech.kisileruygulamasi.repo
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.robusttech.kisileruygulamasi.entitity.Kisiler
+import com.robusttech.kisileruygulamasi.room.Veritabani
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class KisilerDaoRepository {
+class KisilerDaoRepository(var application: Application) {
     var kisilerListesi = MutableLiveData<List<Kisiler>>()
+    var vt: Veritabani
 
     init {
+        vt = Veritabani.veritabaniErisim(application)!!
         kisilerListesi = MutableLiveData<List<Kisiler>>()
     }
 
@@ -16,29 +24,37 @@ class KisilerDaoRepository {
     }
 
     fun tumKisileriAl() {
-        val liste = mutableListOf<Kisiler>()
-        val k1 = Kisiler(1, "Ahmet", "11111")
-        val k2 = Kisiler(2, "Zeynep", "22222")
-        liste.add(k1)
-        liste.add(k2)
-
-        kisilerListesi.value = liste
+        val job: Job = CoroutineScope(Dispatchers.Main).launch {
+            kisilerListesi.value = vt.kisilerDao().tumKisiler()
+        }
     }
 
     fun kisiAra(aramaKelimesi: String) {
-        Log.e("TAG", "kisiAra: $aramaKelimesi", )
+        val job: Job = CoroutineScope(Dispatchers.Main).launch {
+            kisilerListesi.value = vt.kisilerDao().kisiArama(aramaKelimesi)
+        }
     }
 
     fun kisiKayit(kisi_ad: String, kisi_tel: String) {
-        Log.e("TAG", "Kisi kayit: $kisi_ad - $kisi_tel", )
+        val job: Job = CoroutineScope(Dispatchers.Main).launch {
+            val yeniKisi = Kisiler(0, kisi_ad, kisi_tel)
+            vt.kisilerDao().kisiEkle(yeniKisi)
+        }
     }
 
     fun kisiGuncelle(kisi_id: Int, kisi_ad: String, kisi_tel: String) {
-        Log.e("TAG", "Kisi güncelle: $kisi_id - $kisi_ad - $kisi_tel", )
+        val job: Job = CoroutineScope(Dispatchers.Main).launch {
+            val guncellenenKisi = Kisiler(kisi_id, kisi_ad, kisi_tel)
+            vt.kisilerDao().kisiGuncelle(guncellenenKisi)
+        }
     }
 
     fun kisiSil(kisi_id: Int) {
-        Log.e("TAG", "Kisi sil: $kisi_id" )
+        val job: Job = CoroutineScope(Dispatchers.Main).launch {
+            val silinenKisi = Kisiler(kisi_id, "", "")
+            vt.kisilerDao().kisiSil(silinenKisi)
+            tumKisileriAl()
+        }
     }
 
 }

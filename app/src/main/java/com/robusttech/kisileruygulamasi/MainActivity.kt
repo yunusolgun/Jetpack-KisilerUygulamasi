@@ -1,6 +1,7 @@
 package com.robusttech.kisileruygulamasi
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +51,7 @@ import com.robusttech.kisileruygulamasi.ui.theme.KisilerUygulamasiTheme
 import com.robusttech.kisileruygulamasi.ui.theme.Purple80
 import com.robusttech.kisileruygulamasi.ui.theme.PurpleGrey80
 import com.robusttech.kisileruygulamasi.viewmodel.AnasayfaViewModel
+import com.robusttech.kisileruygulamasi.viewmodelfactory.AnasayfaViewModelFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -97,8 +100,16 @@ fun Anasayfa(navController: NavController) {
     val aramaYapiliyorMu = remember { mutableStateOf(false) }
     val tf = remember { mutableStateOf("") }
 
-    val viewModel: AnasayfaViewModel = viewModel()
+    val context = LocalContext.current
+
+    val viewModel: AnasayfaViewModel = viewModel(
+         factory = AnasayfaViewModelFactory(context.applicationContext as Application)
+    )
     val kisilerListesi = viewModel.kisilerListesi.observeAsState(listOf())
+
+    LaunchedEffect(key1 = true) {
+        viewModel.kisileriYukle()
+    }
 
     Scaffold(
         topBar = {

@@ -1,6 +1,7 @@
 package com.robusttech.kisileruygulamasi
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,13 +21,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.robusttech.kisileruygulamasi.ui.theme.Purple80
 import com.robusttech.kisileruygulamasi.ui.theme.PurpleGrey80
+import com.robusttech.kisileruygulamasi.viewmodel.AnasayfaViewModel
 import com.robusttech.kisileruygulamasi.viewmodel.KisiKayitSayfaViewModel
+import com.robusttech.kisileruygulamasi.viewmodelfactory.AnasayfaViewModelFactory
+import com.robusttech.kisileruygulamasi.viewmodelfactory.KisiKayitSayfaViewModelFactory
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +42,10 @@ fun KisiKayitSayfa() {
     val tfKisiTel = remember { mutableStateOf("") }
     val localFocusManager = LocalFocusManager.current
 
-    val viewModel: KisiKayitSayfaViewModel = viewModel()
+    val context = LocalContext.current
+    val viewModel: KisiKayitSayfaViewModel = viewModel(
+        factory = KisiKayitSayfaViewModelFactory(context.applicationContext as Application)
+    )
 
     Scaffold(
         topBar = {
